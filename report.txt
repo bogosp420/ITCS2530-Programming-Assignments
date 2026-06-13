@@ -1,0 +1,9 @@
+================ PLAYER REPORT ================
+Player Name:             Paul
+Team Name:               Pistons
+Games Played:            82
+Total Points:            1200
+Practice Hours:          35.00
+Points Per Game:         14.63
+Practice Avg/Game:       0.43 hours
+===============================================

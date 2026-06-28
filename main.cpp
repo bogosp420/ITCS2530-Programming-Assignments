@@ -17,6 +17,8 @@ double calculateShootingPercent(int totalMakes, int totalShots);
 void viewWeeklyReport(string playerName, int totalShots, int totalMakes);
 void recommendLevel(int totalShots, int totalMakes, double practiceHours);
 
+//test
+
 int main()
 {
     string playerName;

@@ -5,6 +5,12 @@
 #include <cstdlib>
 using namespace std;
 
+struct Session
+{
+    int shotsAttempted;
+    int shotsMade;
+};
+
 // Function prototypes
 void changeConsoleColor();
 void displayBanner();
@@ -12,11 +18,12 @@ void displayMenu();
 string getPlayerName();
 int getValidInt(string prompt, int minValue);
 double getValidDouble(string prompt, double minValue);
-void addPracticeSessions(int &totalShots, int &totalMakes, double &practiceHours);
+void addPracticeSessions(int& totalShots, int& totalMakes, double& practiceHours);
 double calculateShootingPercent(int totalMakes, int totalShots);
 void viewWeeklyReport(string playerName, int totalShots, int totalMakes);
 void recommendLevel(int totalShots, int totalMakes, double practiceHours);
-int findhighestshots(const int shots[], int size);
+void printSessionSummary(const Session sessions[], int size);
+int findHighestShots(const Session sessions[], int size);
 
 int main()
 {
@@ -121,7 +128,7 @@ int getValidInt(string prompt, int minValue)
         cin.clear();
         cin.ignore(1000, '\n');
         cout << "Invalid. Enter a number greater than or equal to "
-             << minValue << ": ";
+            << minValue << ": ";
         cin >> value;
     }
 
@@ -140,7 +147,7 @@ double getValidDouble(string prompt, double minValue)
         cin.clear();
         cin.ignore(1000, '\n');
         cout << "Invalid. Enter a number greater than or equal to "
-             << minValue << ": ";
+            << minValue << ": ";
         cin >> value;
     }
 
@@ -149,56 +156,80 @@ double getValidDouble(string prompt, double minValue)
 
 void addPracticeSessions(int& totalShots, int& totalMakes, double& practiceHours)
 {
-    int sessions;
+    int numSessions;
     const int max_sessions = 7;
 
-    sessions = getValidInt("\nHow many practice sessions did you complete this week? ", 1);
+    Session sessions[max_sessions];
 
-    while (sessions > max_sessions)
+    numSessions = getValidInt("\nHow many practice sessions did you complete this week? ", 1);
+
+    while (numSessions > max_sessions)
     {
         cout << "Invalid. You cannot exceed the array capacity of " << max_sessions << " sessions.\n";
         cout << "Please enter a valid number of sessions (1-" << max_sessions << "): ";
-        cin >> sessions;
+        cin >> numSessions;
     }
 
     practiceHours = getValidDouble("How many total hours did you practice? ", 0.1);
 
-    int shotsArray[max_sessions];
-
-    for (int i = 0; i < sessions; i++)
+    for (int i = 0; i < numSessions; i++)
     {
-        int makes;
-
         cout << "\nSession " << (i + 1) << " shots attempted: ";
-        cin >> shotsArray[i];
+        cin >> sessions[i].shotsAttempted;
 
-        while (cin.fail() || shotsArray[i] <= 0)
+        while (cin.fail() || sessions[i].shotsAttempted <= 0)
         {
             cin.clear();
             cin.ignore(1000, '\n');
             cout << "Invalid. Enter shots greater than 0: ";
-            cin >> shotsArray[i];
+            cin >> sessions[i].shotsAttempted;
         }
 
         cout << "Session " << (i + 1) << " shots made: ";
-        cin >> makes;
+        cin >> sessions[i].shotsMade;
 
-        while (cin.fail() || makes < 0 || makes > shotsArray[i])
+        while (cin.fail() || sessions[i].shotsMade < 0 || sessions[i].shotsMade > sessions[i].shotsAttempted)
         {
             cin.clear();
             cin.ignore(1000, '\n');
             cout << "Invalid. Makes must be between 0 and shots attempted: ";
-            cin >> makes;
+            cin >> sessions[i].shotsMade;
         }
 
-        totalShots = totalShots + shotsArray[i];
-        totalMakes = totalMakes + makes;
+        totalShots = totalShots + sessions[i].shotsAttempted;
+        totalMakes = totalMakes + sessions[i].shotsMade;
     }
 
-    int highestShots = findhighestshots(shotsArray, sessions);
+    printSessionSummary(sessions, numSessions);
+
+    int highestShots = findHighestShots(sessions, numSessions);
 
     cout << "\nPractice data saved.\n";
     cout << "Your highest shooting volume in a single session was: " << highestShots << " shots.\n";
+}
+
+void printSessionSummary(const Session sessions[], int size)
+{
+    cout << "\n----- Session Summary -----\n";
+    for (int i = 0; i < size; i++)
+    {
+        cout << "Session " << (i + 1) << ": "
+            << sessions[i].shotsMade << " / " << sessions[i].shotsAttempted
+            << " shots made\n";
+    }
+}
+
+int findHighestShots(const Session sessions[], int size)
+{
+    int highest = sessions[0].shotsAttempted;
+    for (int i = 1; i < size; i++)
+    {
+        if (sessions[i].shotsAttempted > highest)
+        {
+            highest = sessions[i].shotsAttempted;
+        }
+    }
+    return highest;
 }
 
 double calculateShootingPercent(int totalMakes, int totalShots)
@@ -292,17 +323,4 @@ void recommendLevel(int totalShots, int totalMakes, double practiceHours)
             cout << "Try adding more practice time or improving shot selection.\n";
         }
     }
-}
-
-int findhighestshots(const int shots[], int size)
-{
-    int highest = shots[0];
-    for (int i = 1; i < size; i++)
-    {
-        if (shots[i] > highest)
-        {
-            highest = shots[i];
-        }
-    }
-    return highest;
 }

@@ -1,0 +1,5 @@
+========== Weekly Report ==========
+Player:             jacob
+Total Shots:        150
+Shots Made:         100
+Shooting %:         66.67%
